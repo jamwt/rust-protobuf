@@ -10,13 +10,13 @@
 use protobuf::Message as Message_imported_for_functions;
 use protobuf::ProtobufEnum as ProtobufEnum_imported_for_functions;
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct FileDescriptorSet {
     // message fields
     file: ::protobuf::RepeatedField<FileDescriptorProto>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl FileDescriptorSet {
@@ -34,7 +34,7 @@ impl FileDescriptorSet {
                 FileDescriptorSet {
                     file: ::protobuf::RepeatedField::new(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -96,7 +96,7 @@ impl ::protobuf::Message for FileDescriptorSet {
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -111,7 +111,7 @@ impl ::protobuf::Message for FileDescriptorSet {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -176,13 +176,23 @@ impl ::std::cmp::PartialEq for FileDescriptorSet {
     }
 }
 
+impl ::std::clone::Clone for FileDescriptorSet {
+    fn clone(&self) -> Self {
+        FileDescriptorSet {
+            file: self.file.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for FileDescriptorSet {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct FileDescriptorProto {
     // message fields
     name: ::protobuf::SingularField<::std::string::String>,
@@ -198,7 +208,7 @@ pub struct FileDescriptorProto {
     source_code_info: ::protobuf::SingularPtrField<SourceCodeInfo>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl FileDescriptorProto {
@@ -226,7 +236,7 @@ impl FileDescriptorProto {
                     options: ::protobuf::SingularPtrField::none(),
                     source_code_info: ::protobuf::SingularPtrField::none(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -657,7 +667,7 @@ impl ::protobuf::Message for FileDescriptorProto {
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -712,7 +722,7 @@ impl ::protobuf::Message for FileDescriptorProto {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -841,13 +851,33 @@ impl ::std::cmp::PartialEq for FileDescriptorProto {
     }
 }
 
+impl ::std::clone::Clone for FileDescriptorProto {
+    fn clone(&self) -> Self {
+        FileDescriptorProto {
+            name: self.name.clone(),
+            package: self.package.clone(),
+            dependency: self.dependency.clone(),
+            public_dependency: self.public_dependency.clone(),
+            weak_dependency: self.weak_dependency.clone(),
+            message_type: self.message_type.clone(),
+            enum_type: self.enum_type.clone(),
+            service: self.service.clone(),
+            extension: self.extension.clone(),
+            options: self.options.clone(),
+            source_code_info: self.source_code_info.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for FileDescriptorProto {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct DescriptorProto {
     // message fields
     name: ::protobuf::SingularField<::std::string::String>,
@@ -860,7 +890,7 @@ pub struct DescriptorProto {
     options: ::protobuf::SingularPtrField<MessageOptions>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl DescriptorProto {
@@ -885,7 +915,7 @@ impl DescriptorProto {
                     oneof_decl: ::protobuf::RepeatedField::new(),
                     options: ::protobuf::SingularPtrField::none(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -1197,7 +1227,7 @@ impl ::protobuf::Message for DescriptorProto {
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -1245,7 +1275,7 @@ impl ::protobuf::Message for DescriptorProto {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -1354,20 +1384,37 @@ impl ::std::cmp::PartialEq for DescriptorProto {
     }
 }
 
+impl ::std::clone::Clone for DescriptorProto {
+    fn clone(&self) -> Self {
+        DescriptorProto {
+            name: self.name.clone(),
+            field: self.field.clone(),
+            extension: self.extension.clone(),
+            nested_type: self.nested_type.clone(),
+            enum_type: self.enum_type.clone(),
+            extension_range: self.extension_range.clone(),
+            oneof_decl: self.oneof_decl.clone(),
+            options: self.options.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for DescriptorProto {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct DescriptorProto_ExtensionRange {
     // message fields
     start: ::std::option::Option<i32>,
     end: ::std::option::Option<i32>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl DescriptorProto_ExtensionRange {
@@ -1386,7 +1433,7 @@ impl DescriptorProto_ExtensionRange {
                     start: ::std::option::Option::None,
                     end: ::std::option::Option::None,
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -1474,7 +1521,7 @@ impl ::protobuf::Message for DescriptorProto_ExtensionRange {
             my_size += ::protobuf::rt::value_size(2, *value, ::protobuf::wire_format::WireTypeVarint);
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -1490,7 +1537,7 @@ impl ::protobuf::Message for DescriptorProto_ExtensionRange {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -1563,13 +1610,24 @@ impl ::std::cmp::PartialEq for DescriptorProto_ExtensionRange {
     }
 }
 
+impl ::std::clone::Clone for DescriptorProto_ExtensionRange {
+    fn clone(&self) -> Self {
+        DescriptorProto_ExtensionRange {
+            start: self.start.clone(),
+            end: self.end.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for DescriptorProto_ExtensionRange {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct FieldDescriptorProto {
     // message fields
     name: ::protobuf::SingularField<::std::string::String>,
@@ -1583,7 +1641,7 @@ pub struct FieldDescriptorProto {
     options: ::protobuf::SingularPtrField<FieldOptions>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl FieldDescriptorProto {
@@ -1609,7 +1667,7 @@ impl FieldDescriptorProto {
                     oneof_index: ::std::option::Option::None,
                     options: ::protobuf::SingularPtrField::none(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -1983,7 +2041,7 @@ impl ::protobuf::Message for FieldDescriptorProto {
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -2022,7 +2080,7 @@ impl ::protobuf::Message for FieldDescriptorProto {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -2144,6 +2202,24 @@ impl ::std::cmp::PartialEq for FieldDescriptorProto {
     }
 }
 
+impl ::std::clone::Clone for FieldDescriptorProto {
+    fn clone(&self) -> Self {
+        FieldDescriptorProto {
+            name: self.name.clone(),
+            number: self.number.clone(),
+            label: self.label.clone(),
+            field_type: self.field_type.clone(),
+            type_name: self.type_name.clone(),
+            extendee: self.extendee.clone(),
+            default_value: self.default_value.clone(),
+            oneof_index: self.oneof_index.clone(),
+            options: self.options.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for FieldDescriptorProto {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
@@ -2254,13 +2330,13 @@ impl ::protobuf::ProtobufEnum for FieldDescriptorProto_Label {
 impl ::std::marker::Copy for FieldDescriptorProto_Label {
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct OneofDescriptorProto {
     // message fields
     name: ::protobuf::SingularField<::std::string::String>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl OneofDescriptorProto {
@@ -2278,7 +2354,7 @@ impl OneofDescriptorProto {
                 OneofDescriptorProto {
                     name: ::protobuf::SingularField::none(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -2354,7 +2430,7 @@ impl ::protobuf::Message for OneofDescriptorProto {
             my_size += ::protobuf::rt::string_size(1, &value);
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -2367,7 +2443,7 @@ impl ::protobuf::Message for OneofDescriptorProto {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -2433,13 +2509,23 @@ impl ::std::cmp::PartialEq for OneofDescriptorProto {
     }
 }
 
+impl ::std::clone::Clone for OneofDescriptorProto {
+    fn clone(&self) -> Self {
+        OneofDescriptorProto {
+            name: self.name.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for OneofDescriptorProto {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct EnumDescriptorProto {
     // message fields
     name: ::protobuf::SingularField<::std::string::String>,
@@ -2447,7 +2533,7 @@ pub struct EnumDescriptorProto {
     options: ::protobuf::SingularPtrField<EnumOptions>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl EnumDescriptorProto {
@@ -2467,7 +2553,7 @@ impl EnumDescriptorProto {
                     value: ::protobuf::RepeatedField::new(),
                     options: ::protobuf::SingularPtrField::none(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -2619,7 +2705,7 @@ impl ::protobuf::Message for EnumDescriptorProto {
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -2642,7 +2728,7 @@ impl ::protobuf::Message for EnumDescriptorProto {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -2721,13 +2807,25 @@ impl ::std::cmp::PartialEq for EnumDescriptorProto {
     }
 }
 
+impl ::std::clone::Clone for EnumDescriptorProto {
+    fn clone(&self) -> Self {
+        EnumDescriptorProto {
+            name: self.name.clone(),
+            value: self.value.clone(),
+            options: self.options.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for EnumDescriptorProto {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct EnumValueDescriptorProto {
     // message fields
     name: ::protobuf::SingularField<::std::string::String>,
@@ -2735,7 +2833,7 @@ pub struct EnumValueDescriptorProto {
     options: ::protobuf::SingularPtrField<EnumValueOptions>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl EnumValueDescriptorProto {
@@ -2755,7 +2853,7 @@ impl EnumValueDescriptorProto {
                     number: ::std::option::Option::None,
                     options: ::protobuf::SingularPtrField::none(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -2904,7 +3002,7 @@ impl ::protobuf::Message for EnumValueDescriptorProto {
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -2925,7 +3023,7 @@ impl ::protobuf::Message for EnumValueDescriptorProto {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -3005,13 +3103,25 @@ impl ::std::cmp::PartialEq for EnumValueDescriptorProto {
     }
 }
 
+impl ::std::clone::Clone for EnumValueDescriptorProto {
+    fn clone(&self) -> Self {
+        EnumValueDescriptorProto {
+            name: self.name.clone(),
+            number: self.number.clone(),
+            options: self.options.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for EnumValueDescriptorProto {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct ServiceDescriptorProto {
     // message fields
     name: ::protobuf::SingularField<::std::string::String>,
@@ -3019,7 +3129,7 @@ pub struct ServiceDescriptorProto {
     options: ::protobuf::SingularPtrField<ServiceOptions>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl ServiceDescriptorProto {
@@ -3039,7 +3149,7 @@ impl ServiceDescriptorProto {
                     method: ::protobuf::RepeatedField::new(),
                     options: ::protobuf::SingularPtrField::none(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -3191,7 +3301,7 @@ impl ::protobuf::Message for ServiceDescriptorProto {
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -3214,7 +3324,7 @@ impl ::protobuf::Message for ServiceDescriptorProto {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -3293,13 +3403,25 @@ impl ::std::cmp::PartialEq for ServiceDescriptorProto {
     }
 }
 
+impl ::std::clone::Clone for ServiceDescriptorProto {
+    fn clone(&self) -> Self {
+        ServiceDescriptorProto {
+            name: self.name.clone(),
+            method: self.method.clone(),
+            options: self.options.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for ServiceDescriptorProto {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct MethodDescriptorProto {
     // message fields
     name: ::protobuf::SingularField<::std::string::String>,
@@ -3308,7 +3430,7 @@ pub struct MethodDescriptorProto {
     options: ::protobuf::SingularPtrField<MethodOptions>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl MethodDescriptorProto {
@@ -3329,7 +3451,7 @@ impl MethodDescriptorProto {
                     output_type: ::protobuf::SingularField::none(),
                     options: ::protobuf::SingularPtrField::none(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -3541,7 +3663,7 @@ impl ::protobuf::Message for MethodDescriptorProto {
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -3565,7 +3687,7 @@ impl ::protobuf::Message for MethodDescriptorProto {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -3652,13 +3774,26 @@ impl ::std::cmp::PartialEq for MethodDescriptorProto {
     }
 }
 
+impl ::std::clone::Clone for MethodDescriptorProto {
+    fn clone(&self) -> Self {
+        MethodDescriptorProto {
+            name: self.name.clone(),
+            input_type: self.input_type.clone(),
+            output_type: self.output_type.clone(),
+            options: self.options.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for MethodDescriptorProto {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct FileOptions {
     // message fields
     java_package: ::protobuf::SingularField<::std::string::String>,
@@ -3675,7 +3810,7 @@ pub struct FileOptions {
     uninterpreted_option: ::protobuf::RepeatedField<UninterpretedOption>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl FileOptions {
@@ -3704,7 +3839,7 @@ impl FileOptions {
                     deprecated: ::std::option::Option::None,
                     uninterpreted_option: ::protobuf::RepeatedField::new(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -4136,7 +4271,7 @@ impl ::protobuf::Message for FileOptions {
             my_size += 2 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -4184,7 +4319,7 @@ impl ::protobuf::Message for FileOptions {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -4326,6 +4461,27 @@ impl ::std::cmp::PartialEq for FileOptions {
     }
 }
 
+impl ::std::clone::Clone for FileOptions {
+    fn clone(&self) -> Self {
+        FileOptions {
+            java_package: self.java_package.clone(),
+            java_outer_classname: self.java_outer_classname.clone(),
+            java_multiple_files: self.java_multiple_files.clone(),
+            java_generate_equals_and_hash: self.java_generate_equals_and_hash.clone(),
+            java_string_check_utf8: self.java_string_check_utf8.clone(),
+            optimize_for: self.optimize_for.clone(),
+            go_package: self.go_package.clone(),
+            cc_generic_services: self.cc_generic_services.clone(),
+            java_generic_services: self.java_generic_services.clone(),
+            py_generic_services: self.py_generic_services.clone(),
+            deprecated: self.deprecated.clone(),
+            uninterpreted_option: self.uninterpreted_option.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for FileOptions {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
@@ -4369,7 +4525,7 @@ impl ::protobuf::ProtobufEnum for FileOptions_OptimizeMode {
 impl ::std::marker::Copy for FileOptions_OptimizeMode {
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct MessageOptions {
     // message fields
     message_set_wire_format: ::std::option::Option<bool>,
@@ -4378,7 +4534,7 @@ pub struct MessageOptions {
     uninterpreted_option: ::protobuf::RepeatedField<UninterpretedOption>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl MessageOptions {
@@ -4399,7 +4555,7 @@ impl MessageOptions {
                     deprecated: ::std::option::Option::None,
                     uninterpreted_option: ::protobuf::RepeatedField::new(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -4548,7 +4704,7 @@ impl ::protobuf::Message for MessageOptions {
             my_size += 2 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -4572,7 +4728,7 @@ impl ::protobuf::Message for MessageOptions {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -4658,13 +4814,26 @@ impl ::std::cmp::PartialEq for MessageOptions {
     }
 }
 
+impl ::std::clone::Clone for MessageOptions {
+    fn clone(&self) -> Self {
+        MessageOptions {
+            message_set_wire_format: self.message_set_wire_format.clone(),
+            no_standard_descriptor_accessor: self.no_standard_descriptor_accessor.clone(),
+            deprecated: self.deprecated.clone(),
+            uninterpreted_option: self.uninterpreted_option.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for MessageOptions {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct FieldOptions {
     // message fields
     ctype: ::std::option::Option<FieldOptions_CType>,
@@ -4676,7 +4845,7 @@ pub struct FieldOptions {
     uninterpreted_option: ::protobuf::RepeatedField<UninterpretedOption>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl FieldOptions {
@@ -4700,7 +4869,7 @@ impl FieldOptions {
                     weak: ::std::option::Option::None,
                     uninterpreted_option: ::protobuf::RepeatedField::new(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -4953,7 +5122,7 @@ impl ::protobuf::Message for FieldOptions {
             my_size += 2 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -4986,7 +5155,7 @@ impl ::protobuf::Message for FieldOptions {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -5093,6 +5262,22 @@ impl ::std::cmp::PartialEq for FieldOptions {
     }
 }
 
+impl ::std::clone::Clone for FieldOptions {
+    fn clone(&self) -> Self {
+        FieldOptions {
+            ctype: self.ctype.clone(),
+            packed: self.packed.clone(),
+            lazy: self.lazy.clone(),
+            deprecated: self.deprecated.clone(),
+            experimental_map_key: self.experimental_map_key.clone(),
+            weak: self.weak.clone(),
+            uninterpreted_option: self.uninterpreted_option.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for FieldOptions {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
@@ -5136,7 +5321,7 @@ impl ::protobuf::ProtobufEnum for FieldOptions_CType {
 impl ::std::marker::Copy for FieldOptions_CType {
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct EnumOptions {
     // message fields
     allow_alias: ::std::option::Option<bool>,
@@ -5144,7 +5329,7 @@ pub struct EnumOptions {
     uninterpreted_option: ::protobuf::RepeatedField<UninterpretedOption>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl EnumOptions {
@@ -5164,7 +5349,7 @@ impl EnumOptions {
                     deprecated: ::std::option::Option::None,
                     uninterpreted_option: ::protobuf::RepeatedField::new(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -5284,7 +5469,7 @@ impl ::protobuf::Message for EnumOptions {
             my_size += 2 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -5305,7 +5490,7 @@ impl ::protobuf::Message for EnumOptions {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -5384,20 +5569,32 @@ impl ::std::cmp::PartialEq for EnumOptions {
     }
 }
 
+impl ::std::clone::Clone for EnumOptions {
+    fn clone(&self) -> Self {
+        EnumOptions {
+            allow_alias: self.allow_alias.clone(),
+            deprecated: self.deprecated.clone(),
+            uninterpreted_option: self.uninterpreted_option.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for EnumOptions {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct EnumValueOptions {
     // message fields
     deprecated: ::std::option::Option<bool>,
     uninterpreted_option: ::protobuf::RepeatedField<UninterpretedOption>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl EnumValueOptions {
@@ -5416,7 +5613,7 @@ impl EnumValueOptions {
                     deprecated: ::std::option::Option::None,
                     uninterpreted_option: ::protobuf::RepeatedField::new(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -5507,7 +5704,7 @@ impl ::protobuf::Message for EnumValueOptions {
             my_size += 2 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -5525,7 +5722,7 @@ impl ::protobuf::Message for EnumValueOptions {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -5597,20 +5794,31 @@ impl ::std::cmp::PartialEq for EnumValueOptions {
     }
 }
 
+impl ::std::clone::Clone for EnumValueOptions {
+    fn clone(&self) -> Self {
+        EnumValueOptions {
+            deprecated: self.deprecated.clone(),
+            uninterpreted_option: self.uninterpreted_option.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for EnumValueOptions {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct ServiceOptions {
     // message fields
     deprecated: ::std::option::Option<bool>,
     uninterpreted_option: ::protobuf::RepeatedField<UninterpretedOption>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl ServiceOptions {
@@ -5629,7 +5837,7 @@ impl ServiceOptions {
                     deprecated: ::std::option::Option::None,
                     uninterpreted_option: ::protobuf::RepeatedField::new(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -5720,7 +5928,7 @@ impl ::protobuf::Message for ServiceOptions {
             my_size += 2 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -5738,7 +5946,7 @@ impl ::protobuf::Message for ServiceOptions {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -5810,20 +6018,31 @@ impl ::std::cmp::PartialEq for ServiceOptions {
     }
 }
 
+impl ::std::clone::Clone for ServiceOptions {
+    fn clone(&self) -> Self {
+        ServiceOptions {
+            deprecated: self.deprecated.clone(),
+            uninterpreted_option: self.uninterpreted_option.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for ServiceOptions {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct MethodOptions {
     // message fields
     deprecated: ::std::option::Option<bool>,
     uninterpreted_option: ::protobuf::RepeatedField<UninterpretedOption>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl MethodOptions {
@@ -5842,7 +6061,7 @@ impl MethodOptions {
                     deprecated: ::std::option::Option::None,
                     uninterpreted_option: ::protobuf::RepeatedField::new(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -5933,7 +6152,7 @@ impl ::protobuf::Message for MethodOptions {
             my_size += 2 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -5951,7 +6170,7 @@ impl ::protobuf::Message for MethodOptions {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -6023,13 +6242,24 @@ impl ::std::cmp::PartialEq for MethodOptions {
     }
 }
 
+impl ::std::clone::Clone for MethodOptions {
+    fn clone(&self) -> Self {
+        MethodOptions {
+            deprecated: self.deprecated.clone(),
+            uninterpreted_option: self.uninterpreted_option.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for MethodOptions {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct UninterpretedOption {
     // message fields
     name: ::protobuf::RepeatedField<UninterpretedOption_NamePart>,
@@ -6041,7 +6271,7 @@ pub struct UninterpretedOption {
     aggregate_value: ::protobuf::SingularField<::std::string::String>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl UninterpretedOption {
@@ -6065,7 +6295,7 @@ impl UninterpretedOption {
                     string_value: ::protobuf::SingularField::none(),
                     aggregate_value: ::protobuf::SingularField::none(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -6352,7 +6582,7 @@ impl ::protobuf::Message for UninterpretedOption {
             my_size += ::protobuf::rt::string_size(8, &value);
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -6385,7 +6615,7 @@ impl ::protobuf::Message for UninterpretedOption {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -6492,20 +6722,36 @@ impl ::std::cmp::PartialEq for UninterpretedOption {
     }
 }
 
+impl ::std::clone::Clone for UninterpretedOption {
+    fn clone(&self) -> Self {
+        UninterpretedOption {
+            name: self.name.clone(),
+            identifier_value: self.identifier_value.clone(),
+            positive_int_value: self.positive_int_value.clone(),
+            negative_int_value: self.negative_int_value.clone(),
+            double_value: self.double_value.clone(),
+            string_value: self.string_value.clone(),
+            aggregate_value: self.aggregate_value.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for UninterpretedOption {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct UninterpretedOption_NamePart {
     // message fields
     name_part: ::protobuf::SingularField<::std::string::String>,
     is_extension: ::std::option::Option<bool>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl UninterpretedOption_NamePart {
@@ -6524,7 +6770,7 @@ impl UninterpretedOption_NamePart {
                     name_part: ::protobuf::SingularField::none(),
                     is_extension: ::std::option::Option::None,
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -6635,7 +6881,7 @@ impl ::protobuf::Message for UninterpretedOption_NamePart {
             my_size += 2;
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -6651,7 +6897,7 @@ impl ::protobuf::Message for UninterpretedOption_NamePart {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -6724,19 +6970,30 @@ impl ::std::cmp::PartialEq for UninterpretedOption_NamePart {
     }
 }
 
+impl ::std::clone::Clone for UninterpretedOption_NamePart {
+    fn clone(&self) -> Self {
+        UninterpretedOption_NamePart {
+            name_part: self.name_part.clone(),
+            is_extension: self.is_extension.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for UninterpretedOption_NamePart {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct SourceCodeInfo {
     // message fields
     location: ::protobuf::RepeatedField<SourceCodeInfo_Location>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl SourceCodeInfo {
@@ -6754,7 +7011,7 @@ impl SourceCodeInfo {
                 SourceCodeInfo {
                     location: ::protobuf::RepeatedField::new(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -6816,7 +7073,7 @@ impl ::protobuf::Message for SourceCodeInfo {
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -6831,7 +7088,7 @@ impl ::protobuf::Message for SourceCodeInfo {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -6896,13 +7153,23 @@ impl ::std::cmp::PartialEq for SourceCodeInfo {
     }
 }
 
+impl ::std::clone::Clone for SourceCodeInfo {
+    fn clone(&self) -> Self {
+        SourceCodeInfo {
+            location: self.location.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for SourceCodeInfo {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct SourceCodeInfo_Location {
     // message fields
     path: ::std::vec::Vec<i32>,
@@ -6911,7 +7178,7 @@ pub struct SourceCodeInfo_Location {
     trailing_comments: ::protobuf::SingularField<::std::string::String>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl SourceCodeInfo_Location {
@@ -6932,7 +7199,7 @@ impl SourceCodeInfo_Location {
                     leading_comments: ::protobuf::SingularField::none(),
                     trailing_comments: ::protobuf::SingularField::none(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -7116,7 +7383,7 @@ impl ::protobuf::Message for SourceCodeInfo_Location {
             my_size += ::protobuf::rt::string_size(4, &value);
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -7148,7 +7415,7 @@ impl ::protobuf::Message for SourceCodeInfo_Location {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -7230,6 +7497,19 @@ impl ::std::cmp::PartialEq for SourceCodeInfo_Location {
         self.leading_comments == other.leading_comments &&
         self.trailing_comments == other.trailing_comments &&
         self.unknown_fields == other.unknown_fields
+    }
+}
+
+impl ::std::clone::Clone for SourceCodeInfo_Location {
+    fn clone(&self) -> Self {
+        SourceCodeInfo_Location {
+            path: self.path.clone(),
+            span: self.span.clone(),
+            leading_comments: self.leading_comments.clone(),
+            trailing_comments: self.trailing_comments.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
     }
 }
 

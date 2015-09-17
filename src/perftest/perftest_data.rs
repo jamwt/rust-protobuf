@@ -10,13 +10,13 @@
 use protobuf::Message as Message_imported_for_functions;
 use protobuf::ProtobufEnum as ProtobufEnum_imported_for_functions;
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct Test1 {
     // message fields
     value: ::std::option::Option<i32>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl Test1 {
@@ -34,7 +34,7 @@ impl Test1 {
                 Test1 {
                     value: ::std::option::Option::None,
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -93,7 +93,7 @@ impl ::protobuf::Message for Test1 {
             my_size += ::protobuf::rt::value_size(1, *value, ::protobuf::wire_format::WireTypeVarint);
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -106,7 +106,7 @@ impl ::protobuf::Message for Test1 {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -172,19 +172,29 @@ impl ::std::cmp::PartialEq for Test1 {
     }
 }
 
+impl ::std::clone::Clone for Test1 {
+    fn clone(&self) -> Self {
+        Test1 {
+            value: self.value.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for Test1 {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct TestRepeatedBool {
     // message fields
     values: ::std::vec::Vec<bool>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl TestRepeatedBool {
@@ -202,7 +212,7 @@ impl TestRepeatedBool {
                 TestRepeatedBool {
                     values: ::std::vec::Vec::new(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -261,7 +271,7 @@ impl ::protobuf::Message for TestRepeatedBool {
         let mut my_size = 0;
         my_size += 2 * self.values.len() as u32;
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -274,7 +284,7 @@ impl ::protobuf::Message for TestRepeatedBool {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -339,19 +349,29 @@ impl ::std::cmp::PartialEq for TestRepeatedBool {
     }
 }
 
+impl ::std::clone::Clone for TestRepeatedBool {
+    fn clone(&self) -> Self {
+        TestRepeatedBool {
+            values: self.values.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for TestRepeatedBool {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct TestRepeatedPackedInt32 {
     // message fields
     values: ::std::vec::Vec<i32>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl TestRepeatedPackedInt32 {
@@ -369,7 +389,7 @@ impl TestRepeatedPackedInt32 {
                 TestRepeatedPackedInt32 {
                     values: ::std::vec::Vec::new(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -430,7 +450,7 @@ impl ::protobuf::Message for TestRepeatedPackedInt32 {
             my_size += ::protobuf::rt::vec_packed_varint_size(1, &self.values);
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -448,7 +468,7 @@ impl ::protobuf::Message for TestRepeatedPackedInt32 {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -513,13 +533,23 @@ impl ::std::cmp::PartialEq for TestRepeatedPackedInt32 {
     }
 }
 
+impl ::std::clone::Clone for TestRepeatedPackedInt32 {
+    fn clone(&self) -> Self {
+        TestRepeatedPackedInt32 {
+            values: self.values.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for TestRepeatedPackedInt32 {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct TestRepeatedMessages {
     // message fields
     messages1: ::protobuf::RepeatedField<TestRepeatedMessages>,
@@ -527,7 +557,7 @@ pub struct TestRepeatedMessages {
     messages3: ::protobuf::RepeatedField<TestRepeatedMessages>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl TestRepeatedMessages {
@@ -547,7 +577,7 @@ impl TestRepeatedMessages {
                     messages2: ::protobuf::RepeatedField::new(),
                     messages3: ::protobuf::RepeatedField::new(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -673,7 +703,7 @@ impl ::protobuf::Message for TestRepeatedMessages {
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -698,7 +728,7 @@ impl ::protobuf::Message for TestRepeatedMessages {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -775,13 +805,25 @@ impl ::std::cmp::PartialEq for TestRepeatedMessages {
     }
 }
 
+impl ::std::clone::Clone for TestRepeatedMessages {
+    fn clone(&self) -> Self {
+        TestRepeatedMessages {
+            messages1: self.messages1.clone(),
+            messages2: self.messages2.clone(),
+            messages3: self.messages3.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for TestRepeatedMessages {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct TestOptionalMessages {
     // message fields
     message1: ::protobuf::SingularPtrField<TestOptionalMessages>,
@@ -789,7 +831,7 @@ pub struct TestOptionalMessages {
     message3: ::protobuf::SingularPtrField<TestOptionalMessages>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl TestOptionalMessages {
@@ -809,7 +851,7 @@ impl TestOptionalMessages {
                     message2: ::protobuf::SingularPtrField::none(),
                     message3: ::protobuf::SingularPtrField::none(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -971,7 +1013,7 @@ impl ::protobuf::Message for TestOptionalMessages {
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -996,7 +1038,7 @@ impl ::protobuf::Message for TestOptionalMessages {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -1076,13 +1118,25 @@ impl ::std::cmp::PartialEq for TestOptionalMessages {
     }
 }
 
+impl ::std::clone::Clone for TestOptionalMessages {
+    fn clone(&self) -> Self {
+        TestOptionalMessages {
+            message1: self.message1.clone(),
+            message2: self.message2.clone(),
+            message3: self.message3.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for TestOptionalMessages {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct TestStrings {
     // message fields
     s1: ::protobuf::SingularField<::std::string::String>,
@@ -1090,7 +1144,7 @@ pub struct TestStrings {
     s3: ::protobuf::SingularField<::std::string::String>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl TestStrings {
@@ -1110,7 +1164,7 @@ impl TestStrings {
                     s2: ::protobuf::SingularField::none(),
                     s3: ::protobuf::SingularField::none(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -1278,7 +1332,7 @@ impl ::protobuf::Message for TestStrings {
             my_size += ::protobuf::rt::string_size(3, &value);
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -1297,7 +1351,7 @@ impl ::protobuf::Message for TestStrings {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -1377,19 +1431,31 @@ impl ::std::cmp::PartialEq for TestStrings {
     }
 }
 
+impl ::std::clone::Clone for TestStrings {
+    fn clone(&self) -> Self {
+        TestStrings {
+            s1: self.s1.clone(),
+            s2: self.s2.clone(),
+            s3: self.s3.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for TestStrings {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct TestBytes {
     // message fields
     b1: ::protobuf::SingularField<::std::vec::Vec<u8>>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl TestBytes {
@@ -1407,7 +1473,7 @@ impl TestBytes {
                 TestBytes {
                     b1: ::protobuf::SingularField::none(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -1483,7 +1549,7 @@ impl ::protobuf::Message for TestBytes {
             my_size += ::protobuf::rt::bytes_size(1, &value);
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -1496,7 +1562,7 @@ impl ::protobuf::Message for TestBytes {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -1562,13 +1628,23 @@ impl ::std::cmp::PartialEq for TestBytes {
     }
 }
 
+impl ::std::clone::Clone for TestBytes {
+    fn clone(&self) -> Self {
+        TestBytes {
+            b1: self.b1.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for TestBytes {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct PerftestData {
     // message fields
     test1: ::protobuf::RepeatedField<Test1>,
@@ -1581,7 +1657,7 @@ pub struct PerftestData {
     test_large_bytearrays: ::protobuf::RepeatedField<TestBytes>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl PerftestData {
@@ -1606,7 +1682,7 @@ impl PerftestData {
                     test_small_bytearrays: ::protobuf::RepeatedField::new(),
                     test_large_bytearrays: ::protobuf::RepeatedField::new(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -1892,7 +1968,7 @@ impl ::protobuf::Message for PerftestData {
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -1942,7 +2018,7 @@ impl ::protobuf::Message for PerftestData {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -2046,6 +2122,23 @@ impl ::std::cmp::PartialEq for PerftestData {
         self.test_small_bytearrays == other.test_small_bytearrays &&
         self.test_large_bytearrays == other.test_large_bytearrays &&
         self.unknown_fields == other.unknown_fields
+    }
+}
+
+impl ::std::clone::Clone for PerftestData {
+    fn clone(&self) -> Self {
+        PerftestData {
+            test1: self.test1.clone(),
+            test_repeated_bool: self.test_repeated_bool.clone(),
+            test_repeated_messages: self.test_repeated_messages.clone(),
+            test_optional_messages: self.test_optional_messages.clone(),
+            test_strings: self.test_strings.clone(),
+            test_repeated_packed_int32: self.test_repeated_packed_int32.clone(),
+            test_small_bytearrays: self.test_small_bytearrays.clone(),
+            test_large_bytearrays: self.test_large_bytearrays.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
     }
 }
 

@@ -1484,7 +1484,7 @@ impl<'a> MessageContext<'a> {
 
     fn write_get_cached_size(&self, w: &mut CodeWriter) {
         w.def_fn("get_cached_size(&self) -> u32", |w| {
-            w.write_line("self.cached_size.get()");
+            w.write_line("self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32");
         });
     }
 
@@ -1501,7 +1501,7 @@ impl<'a> MessageContext<'a> {
                         w.field_entry(oneof.name(), init);
                     }
                     w.field_entry("unknown_fields", "::protobuf::UnknownFields::new()");
-                    w.field_entry("cached_size", "::std::cell::Cell::new(0)");
+                    w.field_entry("cached_size", "::std::sync::atomic::AtomicUsize::new(0)");
                 });
             });
         });
@@ -1557,7 +1557,7 @@ impl<'a> MessageContext<'a> {
                 variant.field.write_element_size(w, v, vtype, "my_size");
             });
             w.write_line("my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());");
-            w.write_line("self.cached_size.set(my_size);");
+            w.write_line("self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);");
             w.write_line("my_size");
         });
     }
@@ -1733,8 +1733,28 @@ impl<'a> MessageContext<'a> {
         });
     }
 
+    // cannot use `#[derive(Clone)]` because of `cached_size` field
+    fn write_impl_clone(&self, w: &mut CodeWriter) {
+        w.impl_for_block("::std::clone::Clone", &self.type_name, |w| {
+            w.def_fn("clone(&self) -> Self", |w| {
+                w.expr_block(format!("{}", self.type_name), |w| {
+                    for field in self.fields_except_oneof() {
+                        let init = field.full_storage_type().default_value();
+                        w.field_entry(field.name.to_string(), format!("self.{}.clone()", field.name));
+                    }
+                    for oneof in self.oneofs() {
+                        let init = oneof.full_storage_type().default_value();
+                        w.field_entry(oneof.name(), format!("self.{}.clone()", oneof.name()));
+                    }
+                    w.field_entry("unknown_fields", "self.unknown_fields.clone()");
+                    w.field_entry("cached_size", "::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize)");
+                });
+            });
+        });
+    }
+
     fn write_struct(&self, w: &mut CodeWriter) {
-        let mut derive = vec!["Clone", "Default"];
+        let mut derive = vec!["Default"];
         if self.lite_runtime {
             derive.push("Debug");
         }
@@ -1754,7 +1774,7 @@ impl<'a> MessageContext<'a> {
             }
             w.comment("special fields");
             w.field_entry("unknown_fields", "::protobuf::UnknownFields");
-            w.field_entry("cached_size", "::std::cell::Cell<u32>");
+            w.field_entry("cached_size", "::std::sync::atomic::AtomicUsize");
         });
     }
 
@@ -1774,6 +1794,8 @@ impl<'a> MessageContext<'a> {
         self.write_impl_clear(w);
         w.write_line("");
         self.write_impl_partial_eq(w);
+        w.write_line("");
+        self.write_impl_clone(w);
         if !self.lite_runtime {
             w.write_line("");
             self.write_impl_show(w);

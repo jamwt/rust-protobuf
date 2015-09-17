@@ -28,7 +28,7 @@ use super::descriptor::MethodOptions;
 use super::descriptor::UninterpretedOption;
 use super::descriptor::SourceCodeInfo;
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct CodeGeneratorRequest {
     // message fields
     file_to_generate: ::protobuf::RepeatedField<::std::string::String>,
@@ -36,7 +36,7 @@ pub struct CodeGeneratorRequest {
     proto_file: ::protobuf::RepeatedField<FileDescriptorProto>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl CodeGeneratorRequest {
@@ -56,7 +56,7 @@ impl CodeGeneratorRequest {
                     parameter: ::protobuf::SingularField::none(),
                     proto_file: ::protobuf::RepeatedField::new(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -195,7 +195,7 @@ impl ::protobuf::Message for CodeGeneratorRequest {
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -216,7 +216,7 @@ impl ::protobuf::Message for CodeGeneratorRequest {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -294,20 +294,32 @@ impl ::std::cmp::PartialEq for CodeGeneratorRequest {
     }
 }
 
+impl ::std::clone::Clone for CodeGeneratorRequest {
+    fn clone(&self) -> Self {
+        CodeGeneratorRequest {
+            file_to_generate: self.file_to_generate.clone(),
+            parameter: self.parameter.clone(),
+            proto_file: self.proto_file.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for CodeGeneratorRequest {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct CodeGeneratorResponse {
     // message fields
     error: ::protobuf::SingularField<::std::string::String>,
     file: ::protobuf::RepeatedField<CodeGeneratorResponse_File>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl CodeGeneratorResponse {
@@ -326,7 +338,7 @@ impl CodeGeneratorResponse {
                     error: ::protobuf::SingularField::none(),
                     file: ::protobuf::RepeatedField::new(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -434,7 +446,7 @@ impl ::protobuf::Message for CodeGeneratorResponse {
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -452,7 +464,7 @@ impl ::protobuf::Message for CodeGeneratorResponse {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -524,13 +536,24 @@ impl ::std::cmp::PartialEq for CodeGeneratorResponse {
     }
 }
 
+impl ::std::clone::Clone for CodeGeneratorResponse {
+    fn clone(&self) -> Self {
+        CodeGeneratorResponse {
+            error: self.error.clone(),
+            file: self.file.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
+    }
+}
+
 impl ::std::fmt::Debug for CodeGeneratorResponse {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::protobuf::text_format::fmt(self, f)
     }
 }
 
-#[derive(Clone,Default)]
+#[derive(Default)]
 pub struct CodeGeneratorResponse_File {
     // message fields
     name: ::protobuf::SingularField<::std::string::String>,
@@ -538,7 +561,7 @@ pub struct CodeGeneratorResponse_File {
     content: ::protobuf::SingularField<::std::string::String>,
     // special fields
     unknown_fields: ::protobuf::UnknownFields,
-    cached_size: ::std::cell::Cell<u32>,
+    cached_size: ::std::sync::atomic::AtomicUsize,
 }
 
 impl CodeGeneratorResponse_File {
@@ -558,7 +581,7 @@ impl CodeGeneratorResponse_File {
                     insertion_point: ::protobuf::SingularField::none(),
                     content: ::protobuf::SingularField::none(),
                     unknown_fields: ::protobuf::UnknownFields::new(),
-                    cached_size: ::std::cell::Cell::new(0),
+                    cached_size: ::std::sync::atomic::AtomicUsize::new(0),
                 }
             })
         }
@@ -726,7 +749,7 @@ impl ::protobuf::Message for CodeGeneratorResponse_File {
             my_size += ::protobuf::rt::string_size(15, &value);
         };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
-        self.cached_size.set(my_size);
+        self.cached_size.store(my_size as usize, ::std::sync::atomic::Ordering::Relaxed);
         my_size
     }
 
@@ -745,7 +768,7 @@ impl ::protobuf::Message for CodeGeneratorResponse_File {
     }
 
     fn get_cached_size(&self) -> u32 {
-        self.cached_size.get()
+        self.cached_size.load(::std::sync::atomic::Ordering::Relaxed) as u32
     }
 
     fn get_unknown_fields<'s>(&'s self) -> &'s ::protobuf::UnknownFields {
@@ -822,6 +845,18 @@ impl ::std::cmp::PartialEq for CodeGeneratorResponse_File {
         self.insertion_point == other.insertion_point &&
         self.content == other.content &&
         self.unknown_fields == other.unknown_fields
+    }
+}
+
+impl ::std::clone::Clone for CodeGeneratorResponse_File {
+    fn clone(&self) -> Self {
+        CodeGeneratorResponse_File {
+            name: self.name.clone(),
+            insertion_point: self.insertion_point.clone(),
+            content: self.content.clone(),
+            unknown_fields: self.unknown_fields.clone(),
+            cached_size: ::std::sync::atomic::AtomicUsize::new(self.get_cached_size() as usize),
+        }
     }
 }
 
